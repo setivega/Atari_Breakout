@@ -1,13 +1,12 @@
 score = 0
 lives = 3
-# bricks = []
-
 
 class Brick(object):
 
     def __init__(self, isShown, left, top, brickWidth, brickHeight):
         self.isShown = isShown
         self.left = left
+        self.top = top
         self.brickWidth = brickWidth
         self.brickHeight = brickHeight
 
@@ -18,7 +17,7 @@ class Brick(object):
         return self.top + self.brickHeight
 
     def create(self):
-        rect(left,top,brickWidth,brickHeight)
+        rect(self.left,self.top,self.brickWidth,self.brickHeight)
 
 class Ball(object):
 
@@ -31,10 +30,9 @@ class Ball(object):
 
     def create(self):
         ellipse(self.x,self.y,self.ballSize,self.ballSize)
-        self.y += self.ySpeed
         self.x += self.xSpeed
+        self.y += self.ySpeed
         
-
 class Game(object):
     
     def __init__(self, bricks, ball):
@@ -42,33 +40,40 @@ class Game(object):
         self.ball = ball
         
     def detectHit(self, ball, brick):
+        global lives
 
         #Check ball on left and right of brick
-        if (ball.x > brick.left - (ball.ballSize / 2) and ball.y > brick.top and ball.y < brick.bottom()) or (ball.x < brick.right() + (ball.ballSize / 2) and ball.y > brick.top and ball.y < brick.bottom()):
+        if ((ball.x > brick.left - (ball.ballSize/2) and ball.y > brick.top and ball.y < brick.bottom()) and 
+        (ball.x < brick.right() - (ball.ballSize/2) and ball.y > brick.top and ball.y < brick.bottom())):
             brick.isShown = False
             ball.xSpeed = -ball.xSpeed
+            print("brick left or right")
             
-        #Check ball on top and bottom of brick
-        if (ball.y > brick.top - (ball.ballSize / 2) and ball.x > brick.left and ball.x < brick.right()) or (ball.y < brick.bottom() + (ball.ballSize / 2) and ball.x > brick.left and ball.y < brick.right()):
+        # #Check ball on top and bottom of brick
+        if ((ball.y > brick.top - (ball.ballSize/2) and ball.x > brick.left and ball.x < brick.right()) and 
+        (ball.y < brick.bottom() - (ball.ballSize/2) and ball.x > brick.left and ball.y < brick.right())):
             brick.isShown = False
             ball.ySpeed = -ball.ySpeed
+            print("brick top or bottom")
             
-        if ball.y < 15 and ball.x > 0 and ball.x < 200:
-            ball.ySpeed = -ball.ySpeed
-        elif ball.y < 15 and ball.x > 200 and ball.x < 400:
-            ball.ySpeed = -ball.ySpeed
-        elif ball.y < 15 and ball.x > 400 and ball.x < 600:
-            ball.ySpeed = -ball.ySpeed
-        elif ball.y < 15 and ball.x > 600 and ball.x < 800:
-            ball.ySpeed = -ball.ySpeed
-        elif ball.y < 15 and ball.x > 800 and ball.x < 1000:
-            ball.ySpeed = -ball.ySpeed
+        # if ball.y < 15 and ball.x > 0 and ball.x < 200:
+        #     ball.ySpeed = -ball.ySpeed
+        # elif ball.y < 15 and ball.x > 200 and ball.x < 400:
+        #     ball.ySpeed = -ball.ySpeed
+        # elif ball.y < 15 and ball.x > 400 and ball.x < 600:
+        #     ball.ySpeed = -ball.ySpeed
+        # elif ball.y < 15 and ball.x > 600 and ball.x < 800:
+        #     ball.ySpeed = -ball.ySpeed
+        # elif ball.y < 15 and ball.x > 800 and ball.x < 1000:
+        #     ball.ySpeed = -ball.ySpeed
 
 
         if ball.x > 985:
             ball.xSpeed = -ball.xSpeed
+            print("right")
         elif ball.x < 15:
             ball.xSpeed = -ball.xSpeed
+            print("left")
         
         if ball.y > 685 and ball.y < 710 and ball.x > mouseX - 75 and ball.x < mouseX + 75:
             ball.ySpeed = -ball.ySpeed
@@ -81,23 +86,22 @@ class Game(object):
                 lives -= 1
                 print(lives)
     
-            ball.y = 350
-            ball.x = 500
     
-        
-        
-            
+
     def update(self):
         for brick in self.bricks:
             if brick.isShown == False:
                 bricks.remove(brick)
-        print(brick)
+            # print(brick)
         
     def draw(self):
         for brick in self.bricks:
+            stroke(0,0,0)
             brick.create()
+            self.detectHit(self.ball, brick)
             
-        ball.create()
+        self.ball.create()
+        
             
 
 # Update state
@@ -149,18 +153,20 @@ def setup():
     brick3 = Brick(True,400,0,200,50)
     brick4 = Brick(True,600,0,200,50)
     brick5 = Brick(True,800,0,200,50)
+    
     brick6 = Brick(True,0,50,200,50)
     brick7 = Brick(True,200,50,200,50)
     brick8 = Brick(True,400,50,200,50)
     brick9 = Brick(True,600,50,200,50)
     brick10 = Brick(True,800,50,200,50)
+    
     brick11 = Brick(True,0,100,200,50)
     brick12 = Brick(True,200,100,200,50)
     brick13 = Brick(True,400,100,200,50)
     brick14 = Brick(True,600,100,200,50)
     brick15 = Brick(True,800,100,200,50)
     
-    bricks = [brick1, brick2, brick3, brick4, brick5, brick6, brick7, brick8, brick9, brick10, brick11, brick12, brick13, brick14, brick15]
+    bricks =[brick1, brick2, brick3, brick4, brick5, brick6, brick7, brick8, brick9, brick10, brick11, brick12, brick13, brick14, brick15]
     
     game = Game(bricks, ball)
 
@@ -173,7 +179,6 @@ def draw():
     global name
 
     background(0, 0, 0)
-    game.detectHit(bricks, ball)
     game.update()
     game.draw()
     createGame()
